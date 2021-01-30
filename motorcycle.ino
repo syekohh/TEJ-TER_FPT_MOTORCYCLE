@@ -32,8 +32,11 @@ void loop()
 {
 
   readVal = Serial.read();
-
   delayMicroseconds(1);
+
+  getDirection();
+  getSpeed();
+  /*
   if (readVal == 'a' && pos < 180)
   {
     pos += 30;
@@ -91,6 +94,7 @@ void loop()
     lcd.print(calculateSpeed(speed));
     lcd.print("km/h");
   }
+  */
 }
 
 float calculateSpeed(float speed)
@@ -108,20 +112,86 @@ float calculateSpeed(float speed)
 
 int getDistance()
 {
-    // Clears the trigPin
-    digitalWrite(trigPin, LOW);
-    delayMicroseconds(2);
+  // Clears the trigPin
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
 
-    // Sets the trigPin on HIGH state for 10 micro seconds
-    digitalWrite(trigPin, HIGH);
-    delay(1000);
-    digitalWrite(trigPin, LOW);
+  // Sets the trigPin on HIGH state for 10 micro seconds
+  digitalWrite(trigPin, HIGH);
+  delay(1000);
+  digitalWrite(trigPin, LOW);
 
-    // Reads the echoPin, returns the sound wave travel time in microseconds
-    duration = pulseIn(echoPin, HIGH);
+  // Reads the echoPin, returns the sound wave travel time in microseconds
+  duration = pulseIn(echoPin, HIGH);
 
-    // Calculating the distance
-    distance = duration * 0.034 / 2;
+  // Calculating the distance
+  distance = duration * 0.034 / 2;
 
-    return distance;
+  return distance;
+}
+
+void getDirection()
+{
+
+  if (readVal == 'a' && pos < 180)
+  {
+    pos += 30;
+    Myservo.write(pos);
+    Serial.println(pos);
+    lcd.clear();
+    lcd.setCursor(5, 0);
+    if (pos == 90)
+    {
+      lcd.setCursor(4, 0);
+      lcd.print("STRAIGHT");
+    }
+    if (pos != 90)
+    {
+      lcd.setCursor(6, 0);
+      lcd.print("LEFT");
+    }
+    lcd.setCursor(4, 1);
+    lcd.print(calculateSpeed(speed));
+    lcd.print("km/h");
+  }
+  else if (readVal == 'd' && pos > 0)
+  {
+    pos -= 30;
+    Myservo.write(pos);
+    Serial.println(pos);
+    lcd.clear();
+    lcd.setCursor(5, 0);
+    if (pos == 90)
+    {
+      lcd.setCursor(4, 0);
+      lcd.print("STRAIGHT");
+    }
+    if (pos != 90)
+      lcd.print("RIGHT");
+    lcd.setCursor(4, 1);
+    lcd.print(calculateSpeed(speed));
+    lcd.print("km/h");
+  }
+}
+
+void getSpeed()
+{
+
+  lcd.setCursor(4, 1);
+  if (readVal == 'w' && speed < 255)
+  {
+    speed += 5;
+    analogWrite(11, speed);
+    Serial.println(speed);
+    lcd.print(calculateSpeed(speed));
+    lcd.print("km/h");
+  }
+  else if (readVal == 's' & speed > 0)
+  {
+    speed -= 5;
+    analogWrite(11, speed);
+    Serial.println(speed);
+    lcd.print(calculateSpeed(speed));
+    lcd.print("km/h");
+  }
 }
