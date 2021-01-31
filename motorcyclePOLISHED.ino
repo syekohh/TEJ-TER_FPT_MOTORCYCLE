@@ -19,13 +19,15 @@ const float wheelRadius = 0.052;
 
 const int trigPin = 9;
 const int echoPin = 10;
+const int servoPin = 13;
+const int motorPin = 11;
 
 void setup()
 {
     Serial.begin(9600);
     lcd.begin(16, 2);
-    Myservo.attach(13);
-    pinMode(11, OUTPUT);
+    Myservo.attach(servoPin);
+    pinMode(motorPin, OUTPUT);
     pinMode(trigPin, OUTPUT);
     pinMode(echoPin, INPUT);
 }
@@ -130,22 +132,22 @@ void getSpeed()
   	if (getDistance() < 50) {
       	Serial.println("TOO CLOSE!");
       	speed = 0;
-      	analogWrite(11, speed);
+      	analogWrite(motorPin, speed);
         Serial.println(speed);
         lcd.print(calculateSpeed(speed));
         lcd.print("km/h");
     }else if (readVal == 'w' && speed < 255 && getDistance() >= 50)
     {
         speed += 5;
-        analogWrite(11, speed);
+        analogWrite(motorPin, speed);
         Serial.println(speed);
         lcd.print(calculateSpeed(speed));
         lcd.print("km/h");
     }
-    else if (readVal == 's' & speed > 0 && getDistance() >= 50)
+    else if (readVal == 's' & speed > -15 && getDistance() >= 50)
     {
         speed -= 5;
-        analogWrite(11, speed);
+        analogWrite(motorPin, speed);
         Serial.println(speed);
         lcd.print(calculateSpeed(speed));
         lcd.print("km/h");
